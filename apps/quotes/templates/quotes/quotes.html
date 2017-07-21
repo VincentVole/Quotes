@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<title>Quotes</title>
+	{% load static %}
+    <!-- Bootstrap -->
+    <link href="{% static 'quotes/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<div class="container_fluid">
+		<a href="/logout">Logout</a>
+		<h1>Welcome, {{ user.alias }}!</h1>
+		<div>
+			<h2>Quotable Quotes</h2>
+			<div style="overflow-y: scroll; height: 400px; border: 1px solid lightgrey">
+				{% for quote in quotes %}
+				{% if quote and quote not in fav_quotes %}
+					<div>
+						<p>{{ quote.quote_by }}: {{ quote.content }}<p>
+						<p>Posted by <a href="/users/{{ quote.user.id }}">{{ quote.user.alias }}</a></p>
+						<form action="/favorite/{{ quote.id }}" method="post">
+							{% csrf_token %}
+							<button>Add to My List</button>
+						</form>
+					</div>
+				{% endif %}	
+				{% endfor %}
+			</div>
+		</div>
+		<h2>Your Favorites</h2>
+		<div style="overflow-y: scroll; height: 200px; border: 1px solid lightgrey">
+			<div>
+				{% for quote in fav_quotes %}
+				{% if quote %}
+					<div>
+						<p>{{ quote.quote_by }}: {{ quote.content }}<p>
+						<p>Posted by <a href="/users/{{ quote.user.id }}">{{ quote.user.alias }}</a></p>
+						<form action="/unfavorite/{{ quote.id }}" method="post">
+							{% csrf_token %}
+							<button>Remove from My List</button>
+						</form>
+					</div>
+				{% endif %}	
+				{% endfor %}
+			</div>
+		</div>
+		<h2>Contribute a Quote</h2>
+		<form action="/new_quote" method="post">
+			{% csrf_token %}
+				<label for="quote_by">Quoted By: </label>
+				<input type="text" name="quote_by" id="quote_by">
+				<label for="content">Message: </label>
+				<textarea name="content" id="content" cols="30" rows="10"></textarea>
+				<button>Submit</button>
+		</form>
+		<ul>
+		{% for message in messages %}
+		{% if message %}
+			<li>{{ message }}</li>
+		{% endif %}	
+		{% endfor %}
+		</ul>
+	</div>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'quotes/js/bootstrap.min.js' %}"></script>
+</body>
+</html>
